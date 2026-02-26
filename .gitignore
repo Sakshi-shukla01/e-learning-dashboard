@@ -1,12 +1,32 @@
+# deps
 node_modules/
+**/node_modules/
+
+# env
 .env
 .env.*
 backend/.env
 frontend/.env
-ml_service/.env
+
+# builds
 dist/
 build/
 .vite/
+.next/
+out/
+
+# logs
 *.log
-__pycache__/
+
+# notes / pdfs (you already moved to S3)
+backend/public/notes/
+*.pdf
+
+# ML artifacts (usually big)
+ml_service/models/
 *.pkl
+*.joblib
+
+# datasets if big
+ml_service/data/
+*.csv
