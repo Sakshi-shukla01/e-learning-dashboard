@@ -1,0 +1,12 @@
+node_modules/
+.env
+.env.*
+backend/.env
+frontend/.env
+ml_service/.env
+dist/
+build/
+.vite/
+*.log
+__pycache__/
+*.pkl
