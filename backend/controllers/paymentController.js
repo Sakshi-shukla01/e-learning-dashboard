@@ -3,6 +3,7 @@ import Stripe from "stripe";
 import dotenv from "dotenv";
 import Payment from "../models/Payment.js";
 import User from "../models/User.js"; // ✅ must import
+import Course from "../models/Course.js";
 
 dotenv.config();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -10,46 +11,66 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 // ========================= CREATE CHECKOUT SESSION =========================
 export const createCheckoutSession = async (req, res) => {
   try {
-    const { courseId, courseName, amount } = req.body;
+    const { courseId } = req.body;
     const userId = req.user.id;
 
-    if (!courseId || !courseName || !amount) {
-      return res.status(400).json({ message: "Missing required fields" });
+    if (!courseId) {
+      return res.status(400).json({ message: "Course ID is required" });
     }
 
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
-      mode: "payment",
-      line_items: [
-        {
-          price_data: {
-            currency: "inr",
-            product_data: { name: courseName },
-            unit_amount: amount * 100,
-          },
-          quantity: 1,
-        },
-      ],
-      success_url: `${process.env.FRONTEND_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}&courseId=${courseId}`,
-      cancel_url: `${process.env.FRONTEND_URL}/payment-cancel`,
+    // ✅ Fetch course from DB
+    const course = await Course.findById(courseId);
+
+    if (!course) {
+      return res.status(404).json({ message: "Course not found" });
+    }
+
+    const amount = course.price || 499; // fallback
+
+    console.log("✅ Stripe Debug:", {
+      courseId,
+      name: course.title,
+      amount,
     });
+
+    const FRONTEND_URL =
+  process.env.NODE_ENV === "production"
+    ? "https://e-learning-dashboard-8gs4.vercel.app"
+    : "http://localhost:5173";
+
+const session = await stripe.checkout.sessions.create({
+  payment_method_types: ["card"],
+  mode: "payment",
+  line_items: [
+    {
+      price_data: {
+        currency: "inr",
+        product_data: { name: course.title },
+        unit_amount: Math.round(amount * 100),
+      },
+      quantity: 1,
+    },
+  ],
+  success_url: `${FRONTEND_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}&courseId=${courseId}`,
+  cancel_url: `${FRONTEND_URL}/payment-cancel`,
+});
 
     await Payment.create({
       userId,
       courseId,
-      courseName,
+      courseName: course.title,
       coursePrice: amount,
       stripeSessionId: session.id,
       paymentStatus: "pending",
     });
 
     res.json({ url: session.url });
+
   } catch (error) {
-    console.error("🔥 Stripe error:", error.message);
+    console.error("🔥 Stripe FULL error:", error);
     res.status(500).json({ error: error.message });
   }
 };
-
 // ============================= VERIFY PAYMENT ============================
 export const verifyPayment = async (req, res) => {
   try {
