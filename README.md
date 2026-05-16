@@ -16,7 +16,7 @@ Interactive E-Learning Dashboard
 | **Backend** | Node.js, Express.js, RESTful APIs, JWT Authentication |
 | **ML Service** | Python, Flask, XGBoost, Scikit-Learn, Pandas |
 | **Database** | MongoDB (Aggregation Pipelines, Compound Indexing, Transactions) |
-| **Cloud** | AWS S3 (PDF delivery + Video streaming) |
+| **Cloud** | AWS S3 (PDF delivery) |
 | **Tools** | Git, Postman, VS Code |
 
 ---
