@@ -3,7 +3,6 @@ Interactive E-Learning Dashboard
 
 > A full-stack AI-powered e-learning platform with an **XGBoost-based course recommendation engine**, **AWS S3 media delivery**, and **optimized MongoDB analytics** — built with React.js, Node.js, Express.js, Flask, and Python ML stack.
 
-🔗 **Live Demo:** [e-learning-dashboard-hazel.vercel.app](https://e-learning-dashboard-hazel.vercel.app)  
 📦 **GitHub:** [Sakshi-shukla01/e-learning-dashboard](https://github.com/Sakshi-shukla01/e-learning-dashboard)
 
 ---
